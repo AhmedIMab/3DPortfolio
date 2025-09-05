@@ -6,11 +6,13 @@ import { OrbitControls } from "three/addons";
 import {cloneUniformsGroups} from "three/src/renderers/shaders/UniformsUtils.js";
 
 const canvas = document.querySelector('#phone')
+const textureLoader = new THREE.TextureLoader()
+const homeScreenTexture = textureLoader.load('/imgs/home_screen.jpg')
 
 const scene = new THREE.Scene()
-scene.background = new THREE.Color('white');
+scene.background = new THREE.Color('#3b3b3b');
 
-const camera = new THREE.PerspectiveCamera( 75,
+const camera = new THREE.PerspectiveCamera( 50,
     window.innerWidth / window.innerHeight, 0.1, 1000)
 camera.position.z = 5;
 
@@ -48,9 +50,12 @@ loader.load('/scene.gltf', function ( gltf ) {
     // model.overrideMaterial(new MeshBasicMaterial({ color: "blue"}))
     scene.add(model)
     model.traverse((child) => {
-        if (child.isMesh) {
+        if (child.isMesh && child.name === "Object_5") {
             // To see all the mesh names
             console.log(child.name);
+            child.material = new THREE.MeshBasicMaterial({
+                map: homeScreenTexture
+            })
         }
     });
     // onProgress can be used for displaying something while it's loading the file
@@ -65,6 +70,9 @@ function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth ) * 2 -1;
     mouse.y = -(event.clientY / window.innerHeight ) * 2 + 1;
 
+    // console.log("x: ", mouse.x);
+    // console.log("y: ", mouse.y);
+
     raycaster.setFromCamera(mouse, camera)
 
     if (model) {
@@ -74,7 +82,7 @@ function onMouseClick(event) {
         if (intersectPoint.length > 0) {
             const clickedPart = intersectPoint[0].object;
             console.log('clicked:', clickedPart.name);
-            clickedPart.material.color.set('red')
+            // clickedPart.material.color.set('red')
         }
     }
 }
